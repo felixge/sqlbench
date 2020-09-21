@@ -36,6 +36,9 @@ Usage of sqlbench:
     	Terminate after the given number of iterations. (default -1)
   -o string
     	Output path for writing individual measurements in CSV format.
+  -p	Include the query planning time. For -m explain this is accomplished by adding
+    	the "Planning Time" to the measurement. For -m client this is done by not using
+    	prepared statements.
   -s	Silent mode for non-interactive use, only prints stats once after terminating.
   -t float
     	Terminate after the given number of seconds. (default -1)
@@ -51,7 +54,9 @@ sqlbench takes a list of SQL files and keeps executing them sequentially, measur
 
 The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses.
 
-If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes query planning and network overhead.
+If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes network overhead.
+
+Planning time is excluded by default, but can be included using the `-p` flag.
 
 The filenames `init.sql` and `destroy.sql` are special, and are executed once before and after the benchmark respectively. They can be used to setup or teardown tables, indexes, etc..
 

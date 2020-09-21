@@ -45,9 +45,14 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 		csvF        = flag.String("o", "", "Output path for writing individual measurements in CSV format.")
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")
-		silentF     = flag.Bool("s", false, "Silent mode for non-interactive use, only prints stats once after terminating.")
-		versionF    = flag.Bool("version", false, "Print version and exit.")
-		verboseF    = flag.Bool("v", false, strings.TrimSpace(`
+		planF       = flag.Bool("p", false, strings.TrimSpace(`
+Include the query planning time. For -m explain this is accomplished by adding
+the "Planning Time" to the measurement. For -m client this is done by not using
+prepared statements.
+`))
+		silentF  = flag.Bool("s", false, "Silent mode for non-interactive use, only prints stats once after terminating.")
+		versionF = flag.Bool("version", false, "Print version and exit.")
+		verboseF = flag.Bool("v", false, strings.TrimSpace(`
 Verbbose output. Print the content of all SQL queries, as well as the
 PostgreSQL version.
 `))
@@ -116,11 +121,19 @@ PostgreSQL version.
 
 	var exitMsg string
 
+	preparedFns := map[string]func() (time.Duration, error){}
+
 outerLoop:
 	for i := int64(1); ; i++ {
 		for _, query := range bench.Queries {
+			preparedFn := preparedFns[query.Path]
+			if preparedFn == nil {
+				preparedFn = methodFn(ctx, conn, query.SQL, *planF)
+				preparedFns[query.Path] = preparedFn
+			}
+
 			for {
-				delta, err := methodFn(ctx, conn, query.SQL)
+				delta, err := preparedFn()
 				if err != nil {
 					return fmt.Errorf("%s: %w", query.Path, err)
 					// Deal with PostgreSQL reporting negative execution times, probably
@@ -186,7 +199,9 @@ outerLoop:
 		fmt.Printf("sqlbench %s\n\n", args)
 		all := append(append([]*Query{bench.Init}, bench.Queries...), bench.Destroy)
 		for _, q := range all {
-			fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
+			if q != nil {
+				fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
+			}
 		}
 	}
 
@@ -374,6 +389,10 @@ func (q *Query) UpdateStats() error {
 }
 
 func execIndividually(ctx context.Context, conn *sql.Conn, q *Query) error {
+	if q == nil {
+		return nil
+	}
+
 	for _, cmd := range strings.Split(q.SQL, ";") {
 		if _, err := conn.ExecContext(ctx, cmd); err != nil {
 			// TODO(fg) nice errors with line number, etc.
