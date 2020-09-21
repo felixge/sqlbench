@@ -49,6 +49,8 @@ Usage of sqlbench:
 
 sqlbench takes a list of SQL files and keeps executing them sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN ANALYZE` and capturing the total `Execution Time` for it.
 
+The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses.
+
 If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes query planning and network overhead.
 
 The filenames `init.sql` and `destroy.sql` are special, and are executed once before and after the benchmark respectively. They can be used to setup or teardown tables, indexes, etc..
