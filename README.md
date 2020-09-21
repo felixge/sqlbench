@@ -1,6 +1,6 @@
 # sqlbench
 
-sqlbench compares the runtime of one or more SQL queries with each other.
+sqlbench measures and compares the execution time of one or more SQL queries.
 
 ![screen recording](./recording/recording-min.gif)
 
