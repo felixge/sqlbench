@@ -8,7 +8,11 @@ The main use case is benchmarking simple CPU-bound query or expression variants 
 
 ## Install
 
-go install -u github.com/felixge/sqlbench
+To install or update sqlbench, run:
+
+```
+$ go get -u github.com/felixge/sqlbench
+```
 
 ## Usage
 

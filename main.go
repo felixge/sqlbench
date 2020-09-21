@@ -20,6 +20,8 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+const version = "1.0"
+
 func main() {
 	if err := run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -44,12 +46,18 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")
 		silentF     = flag.Bool("s", false, "Silent mode for non-interactive use, only prints stats once after terminating.")
+		versionF    = flag.Bool("version", false, "Print version and exit.")
 		verboseF    = flag.Bool("v", false, strings.TrimSpace(`
 Verbbose output. Print the content of all SQL queries, as well as the
 PostgreSQL version.
 `))
 	)
 	flag.Parse()
+
+	if *versionF {
+		fmt.Printf("%s\n", version)
+		return nil
+	}
 
 	methodFn, ok := queryDurationFuncs[*methodF]
 	if !ok {
