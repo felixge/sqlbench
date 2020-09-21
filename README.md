@@ -171,6 +171,7 @@ Below are a few ideas for todos that I might implement at some point or would we
 - [ ] Capture query plans for each query, ideally one close to the median execution time.
 - [ ] Provide an easy way to capture all inputs and outputs in a single tar.gz file or GitHub gist.
 - [ ] Plot query times as a histogram (made a proof of concept for this, but didn't like it enough yet to release)
+- [ ] Maybe add db name to verbose output, [see request](https://twitter.com/breinbaas1/status/1308138210606940160).
 - [x] A flag to include planning time in `-m explain` mode.
 - [x] A flag to use prepared queries in `-m client` mode.
 
