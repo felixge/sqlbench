@@ -164,7 +164,8 @@ outerLoop:
 	}
 
 	if *verboseF {
-		fmt.Printf("\n")
+		args := strings.Join(os.Args[1:], " ")
+		fmt.Printf("\nsqlbench was invoked with: %s\n\n", args)
 		for _, q := range bench.Queries {
 			fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
 		}
