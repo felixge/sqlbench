@@ -145,6 +145,15 @@ Stopping after 1000 iterations as requested.
 
 Indeed, it appears that from the client's perspective the gauss query is a bit slower, while the others are a bit faster when measuring without `EXPLAIN ANALYZE`. Whether that's a rabbit hole worth exploring depends on you, but either way you now have a much better sense of the errors that might be contained in your measurements.
 
+## Feature Ideas
+
+Below are a few ideas for features that I might implement at some point or would welcome as pull requests.
+
+- [ ] Support specifying benchmarks using a single YAML file.
+- [ ] Capture query plans for each query, ideally one close to the median execution time.
+- [ ] Provide an easy way to capture all inputs and outputs in a single tar.gz file or GitHub gist.
+- [ ] Plot query times as a histogram (made a proof of concept for this, but didn't like it enough yet to release)
+
 ## License
 
 sqlbench is licensed under the MIT license.
