@@ -81,7 +81,7 @@ PostgreSQL version.
 	}
 
 	if err := execIndividually(ctx, conn, bench.Init); err != nil {
-		return fmt.Errorf("failed to run init sql: %w", err)
+		return err
 	}
 
 	drawTicker := &time.Ticker{}
@@ -122,7 +122,7 @@ outerLoop:
 			for {
 				delta, err := methodFn(ctx, conn, query.SQL)
 				if err != nil {
-					return err
+					return fmt.Errorf("%s: %w", query.Path, err)
 					// Deal with PostgreSQL reporting negative execution times, probably
 					// a docker for mac issue on my machine.
 				} else if delta < 0 {
@@ -171,7 +171,7 @@ outerLoop:
 	fmt.Printf("\n%s\n", exitMsg)
 
 	if err := execIndividually(ctx, conn, bench.Destroy); err != nil {
-		return fmt.Errorf("failed to run destroy sql: %w", err)
+		return err
 	}
 
 	if *verboseF {
@@ -184,7 +184,8 @@ outerLoop:
 		fmt.Printf("\n")
 		fmt.Printf("postres version: %s\n", version)
 		fmt.Printf("sqlbench %s\n\n", args)
-		for _, q := range bench.Queries {
+		all := append(append([]*Query{bench.Init}, bench.Queries...), bench.Destroy)
+		for _, q := range all {
 			fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
 		}
 	}
@@ -264,9 +265,9 @@ func LoadBenchmark(paths ...string) (*Benchmark, error) {
 		// case. We could import a proper PostgreSQL query parser to solve this at
 		// some point.
 		if strings.HasSuffix(q.Name, "init") {
-			b.Init = append(b.Init, strings.Split(q.SQL, ";")...)
+			b.Init = q
 		} else if strings.HasSuffix(q.Name, "destroy") {
-			b.Destroy = append(b.Init, strings.Split(q.SQL, ";")...)
+			b.Destroy = q
 		} else {
 			b.Queries = append(b.Queries, q)
 		}
@@ -300,12 +301,12 @@ func loadQuery(path string) (*Query, error) {
 }
 
 type Benchmark struct {
-	// Init SQL statements to execute before starting the benchmark.
-	Init []string
+	// Init SQL statement to execute before starting the benchmark.
+	Init *Query
 	// Queries to execute during the benchmark.
 	Queries []*Query
-	// Destroy SQL statements to execute after finishing the benchmark.
-	Destroy []string
+	// Destroy SQL query to execute after finishing the benchmark.
+	Destroy *Query
 }
 
 // Update updates the stats of all queries and sorts them by mean execution
@@ -372,11 +373,11 @@ func (q *Query) UpdateStats() error {
 	return nil
 }
 
-func execIndividually(ctx context.Context, conn *sql.Conn, cmds []string) error {
-	for _, cmd := range cmds {
+func execIndividually(ctx context.Context, conn *sql.Conn, q *Query) error {
+	for _, cmd := range strings.Split(q.SQL, ";") {
 		if _, err := conn.ExecContext(ctx, cmd); err != nil {
 			// TODO(fg) nice errors with line number, etc.
-			return fmt.Errorf("-i: %w", err)
+			return fmt.Errorf("%s: %w", q.Path, err)
 		}
 	}
 	return nil
