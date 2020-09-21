@@ -45,6 +45,14 @@ Usage of sqlbench:
     	Print version and exit.
 ```
 
+### How It Works
+
+sqlbench runs a loop that keeps executing the given SQL files sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN ANALYZE` and capturing the total `Execution Time` for it.
+
+If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes query planning and network overhead.
+
+The filenames `init.sql` and `destroy.sql` are special, and are executed once before and after the benchmark respectively. They can be used to setup or teardown tables, indexes, etc..
+
 ## Tutorial
 
 Let's say you want to compare three different queries for computing the running total of all numbers from 1 to 1000. Your first idea is to use a window function:
