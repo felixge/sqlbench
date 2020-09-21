@@ -165,7 +165,7 @@ outerLoop:
 
 	if *verboseF {
 		args := strings.Join(os.Args[1:], " ")
-		fmt.Printf("\nsqlbench was invoked with: %s\n\n", args)
+		fmt.Printf("\nsqlbench %s\n\n", args)
 		for _, q := range bench.Queries {
 			fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
 		}
@@ -293,15 +293,15 @@ type Benchmark struct {
 // Update updates the stats of all queries and sorts them by mean execution
 // time in ascending order.
 func (b *Benchmark) Update() error {
-	sort.Slice(b.Queries, func(i, j int) bool {
-		return b.Queries[i].Mean < b.Queries[j].Mean
-	})
-
 	for _, query := range b.Queries {
 		if err := query.UpdateStats(); err != nil {
 			return err
 		}
 	}
+
+	sort.Slice(b.Queries, func(i, j int) bool {
+		return b.Queries[i].Mean < b.Queries[j].Mean
+	})
 	return nil
 }
 
