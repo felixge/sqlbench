@@ -1,6 +1,6 @@
 # sqlbench
 
-sqlbench benchmarks one or more SQL queries against each other, outputting statistics
+sqlbench compares the runtime of one or more SQL queries with each other.
 
 ![screen recording](./recording/recording-min.gif)
 
