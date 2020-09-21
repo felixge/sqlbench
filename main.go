@@ -41,7 +41,7 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 
 [1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
 [2] https://www.postgresql.org/docs/current/libpq-envars.html
-`))
+`)+"\n")
 		csvF        = flag.String("o", "", "Output path for writing individual measurements in CSV format.")
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")

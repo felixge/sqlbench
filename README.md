@@ -26,7 +26,8 @@ Usage of sqlbench:
     	PGHOST, PGPORT, PGPASSWORD, ... .
     	
     	[1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
-    	[2] https://www.postgresql.org/docs/current/libpq-envars.html (default "postgres://")
+    	[2] https://www.postgresql.org/docs/current/libpq-envars.html
+    	(default "postgres://")
   -m string
     	Method for measuring the query time. One of: "client", "explain" (default "explain")
   -n int
