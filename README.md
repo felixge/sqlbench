@@ -47,7 +47,7 @@ Usage of sqlbench:
 
 ### How It Works
 
-sqlbench runs a loop that keeps executing the given SQL files sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN ANALYZE` and capturing the total `Execution Time` for it.
+sqlbench takes a list of SQL files and keeps executing them sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN ANALYZE` and capturing the total `Execution Time` for it.
 
 If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes query planning and network overhead.
 
