@@ -44,7 +44,10 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")
 		silentF     = flag.Bool("s", false, "Silent mode for non-interactive use, only prints stats once after terminating.")
-		verboseF    = flag.Bool("v", false, "Print the content of all SQL query files that were executed at the end.")
+		verboseF    = flag.Bool("v", false, strings.TrimSpace(`
+Verbbose output. Print the content of all SQL queries, as well as the
+PostgreSQL version.
+`))
 	)
 	flag.Parse()
 
@@ -164,8 +167,15 @@ outerLoop:
 	}
 
 	if *verboseF {
+		var version string
+		if err := db.QueryRow("SELECT version();").Scan(&version); err != nil {
+			return fmt.Errorf("failed to determine PostgreSQL version: %w", err)
+		}
+
 		args := strings.Join(os.Args[1:], " ")
-		fmt.Printf("\nsqlbench %s\n\n", args)
+		fmt.Printf("\n")
+		fmt.Printf("postres version: %s\n", version)
+		fmt.Printf("sqlbench %s\n\n", args)
 		for _, q := range bench.Queries {
 			fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
 		}
