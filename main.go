@@ -44,6 +44,7 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")
 		silentF     = flag.Bool("s", false, "Silent mode for non-interactive use, only prints stats once after terminating.")
+		verboseF    = flag.Bool("v", false, "Print the content of all SQL query files that were executed at the end.")
 	)
 	flag.Parse()
 
@@ -162,10 +163,12 @@ outerLoop:
 		return fmt.Errorf("failed to run destroy sql: %w", err)
 	}
 
-	// TODO(fg) duplication
-	//if err := Plot(queries, "cool.png"); err != nil {
-	//return err
-	//}
+	if *verboseF {
+		fmt.Printf("\n")
+		for _, q := range bench.Queries {
+			fmt.Printf("==> %s <==\n%s\n", q.Path, q.SQL)
+		}
+	}
 
 	return nil
 }
@@ -271,6 +274,7 @@ func loadQuery(path string) (*Query, error) {
 	}
 	name := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 	return &Query{
+		Path: path,
 		Name: name,
 		SQL:  string(sql),
 	}, nil
@@ -301,6 +305,7 @@ func (b *Benchmark) Update() error {
 }
 
 type Query struct {
+	Path string
 	Name string
 	SQL  string
 
