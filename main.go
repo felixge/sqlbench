@@ -53,7 +53,7 @@ prepared statements.
 		silentF  = flag.Bool("s", false, "Silent mode for non-interactive use, only prints stats once after terminating.")
 		versionF = flag.Bool("version", false, "Print version and exit.")
 		verboseF = flag.Bool("v", false, strings.TrimSpace(`
-Verbbose output. Print the content of all SQL queries, as well as the
+Verbose output. Print the content of all SQL queries, as well as the
 PostgreSQL version.
 `))
 	)
@@ -195,7 +195,7 @@ outerLoop:
 
 		args := strings.Join(os.Args[1:], " ")
 		fmt.Printf("\n")
-		fmt.Printf("postres version: %s\n", version)
+		fmt.Printf("postgres version: %s\n", version)
 		fmt.Printf("sqlbench %s\n\n", args)
 		all := append(append([]*Query{bench.Init}, bench.Queries...), bench.Destroy)
 		for _, q := range all {

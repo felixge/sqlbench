@@ -42,7 +42,7 @@ Usage of sqlbench:
   -s	Silent mode for non-interactive use, only prints stats once after terminating.
   -t float
     	Terminate after the given number of seconds. (default -1)
-  -v	Verbbose output. Print the content of all SQL queries, as well as the
+  -v	Verbose output. Print the content of all SQL queries, as well as the
     	PostgreSQL version.
   -version
     	Print version and exit.
@@ -116,7 +116,7 @@ $ sqlbench -v -s -n 1000 examples/sum/*.sql | tee explain-bench.txt
 
 Stopping after 1000 iterations as requested.
 
-postres version: PostgreSQL 11.6 on x86_64-apple-darwin16.7.0, compiled by Apple LLVM version 8.1.0 (clang-802.0.42), 64-bit
+postgres version: PostgreSQL 11.6 on x86_64-apple-darwin16.7.0, compiled by Apple LLVM version 8.1.0 (clang-802.0.42), 64-bit
 sqlbench -v -s -n 1000 examples/sum/gauss.sql examples/sum/recursive.sql examples/sum/window.sql
 
 ==> examples/sum/gauss.sql <==
