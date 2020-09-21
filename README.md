@@ -28,7 +28,7 @@ Usage of sqlbench:
     	[1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
     	[2] https://www.postgresql.org/docs/current/libpq-envars.html (default "postgres://")
   -m string
-    	Method for measuring the query time. One of: "explain", "client" (default "explain")
+    	Method for measuring the query time. One of: "client", "explain" (default "explain")
   -n int
     	Terminate after the given number of iterations. (default -1)
   -o string
@@ -38,6 +38,8 @@ Usage of sqlbench:
     	Terminate after the given number of seconds. (default -1)
   -v	Verbbose output. Print the content of all SQL queries, as well as the
     	PostgreSQL version.
+  -version
+    	Print version and exit.
 ```
 
 ## Tutorial
