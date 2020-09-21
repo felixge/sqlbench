@@ -157,7 +157,10 @@ Indeed, it appears that from the client's perspective the gauss query is a bit s
 
 Below are a few ideas for features that I might implement at some point or would welcome as pull requests.
 
+- [ ] A flag to include planning time in `-m explain` mode.
+- [ ] A flag to use prepared queries in `-m client` mode.
 - [ ] Support specifying benchmarks using a single YAML file.
+- [ ] Support for other databases, e.g. MySQL.
 - [ ] Capture query plans for each query, ideally one close to the median execution time.
 - [ ] Provide an easy way to capture all inputs and outputs in a single tar.gz file or GitHub gist.
 - [ ] Plot query times as a histogram (made a proof of concept for this, but didn't like it enough yet to release)
