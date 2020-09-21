@@ -1,0 +1,1 @@
+SELECT i FROM numbers GROUP BY 1;
