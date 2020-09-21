@@ -6,6 +6,8 @@ sqlbench compares the runtime of one or more SQL queries with each other.
 
 The main use case is benchmarking simple CPU-bound query or expression variants against each other during local development.
 
+Only PostgreSQL is supported at this point, but pull requests for MySQL or other databases are welcome.
+
 ## Install
 
 To install or update sqlbench, run:
