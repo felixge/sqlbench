@@ -157,6 +157,7 @@ Indeed, it appears that from the client's perspective the gauss query is a bit s
 
 Below are a few ideas for features that I might implement at some point or would welcome as pull requests.
 
+- [ ] Dynamically adjust unit between ms, s, etc.
 - [ ] A flag to include planning time in `-m explain` mode.
 - [ ] A flag to use prepared queries in `-m client` mode.
 - [ ] Support specifying benchmarks using a single YAML file.
