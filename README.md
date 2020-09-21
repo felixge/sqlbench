@@ -153,9 +153,9 @@ Stopping after 1000 iterations as requested.
 
 Indeed, it appears that from the client's perspective the gauss query is a bit slower, while the others are a bit faster when measuring without `EXPLAIN ANALYZE`. Whether that's a rabbit hole worth exploring depends on you, but either way you now have a much better sense of the errors that might be contained in your measurements.
 
-## Feature Ideas
+## Todos
 
-Below are a few ideas for features that I might implement at some point or would welcome as pull requests.
+Below are a few ideas for todos that I might implement at some point or would welcome as pull requests.
 
 - [ ] Dynamically adjust unit between ms, s, etc.
 - [ ] A flag to include planning time in `-m explain` mode.
