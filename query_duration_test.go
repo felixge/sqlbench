@@ -10,7 +10,7 @@ func Test_queryDurationFuncs(t *testing.T) {
 
 	for name, fn := range queryDurationFuncs {
 		t.Run(name, func(t *testing.T) {
-			d, err := fn(ctx, conn, "SELECT 1")
+			d, err := fn(ctx, conn, "SELECT 1", true)()
 			if err != nil {
 				t.Fatal(err)
 			} else if d <= 0 {
