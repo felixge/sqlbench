@@ -1,0 +1,20 @@
+builds:
+  - binary: sqlbench
+    goarch: [amd64]
+    goos:
+      - darwin
+      - linux
+      - windows
+archives:
+  - builds: [sqlbench]
+    format_overrides:
+      - goos: windows
+        format: zip
+changelog:
+  sort: asc
+nfpms:
+  - vendor: sqlbench
+    homepage: https://github.com/felixge/sqlbench
+    maintainer: Felix Geisendörfer
+    description: sqlbench measures and compares the execution time of one or more SQL queries.
+    formats: [deb]
