@@ -165,6 +165,8 @@ Indeed, it appears that from the client's perspective the gauss query is a bit s
 Below are a few ideas for todos that I might implement at some point or would welcome as pull requests.
 
 - [ ] Compare benchmark results between PG versions
+- [ ] Warmup phase
+- [ ] Oneliner examples for README
 - [ ] Use `TIMING OFF` to reduce EXPLAIN overhead.
 - [ ] Dynamically adjust unit between ms, s, etc.
 - [ ] Support specifying benchmarks using a single YAML file.
