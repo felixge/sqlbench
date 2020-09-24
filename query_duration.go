@@ -73,7 +73,7 @@ func explainDuration(ctx context.Context, conn *sql.Conn, query string, includeP
 		PlanningTime  float64 `json:"Planning Time"`
 	}
 
-	query = "EXPLAIN (ANALYZE, FORMAT JSON) " + query
+	query = "EXPLAIN (ANALYZE, FORMAT JSON, TIMING OFF) " + query
 	return func() (time.Duration, error) {
 		var explainJSON []byte
 		if err := conn.QueryRowContext(ctx, query).Scan(&explainJSON); err != nil {

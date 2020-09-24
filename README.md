@@ -50,7 +50,7 @@ Usage of sqlbench:
 
 ### How It Works
 
-sqlbench takes a list of SQL files and keeps executing them sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN ANALYZE` and capturing the total `Execution Time` for it.
+sqlbench takes a list of SQL files and keeps executing them sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN (ANALYZE, TIMING OFF) ` and capturing the total `Execution Time` for it.
 
 The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses.
 
@@ -167,7 +167,6 @@ Below are a few ideas for todos that I might implement at some point or would we
 - [ ] Compare benchmark results between PG versions
 - [ ] Warmup phase
 - [ ] Oneliner examples for README
-- [ ] Use `TIMING OFF` to reduce EXPLAIN overhead.
 - [ ] Dynamically adjust unit between ms, s, etc.
 - [ ] Support specifying benchmarks using a single YAML file.
 - [ ] Support for other databases, e.g. MySQL.
@@ -175,6 +174,7 @@ Below are a few ideas for todos that I might implement at some point or would we
 - [ ] Provide an easy way to capture all inputs and outputs in a single tar.gz file or GitHub gist.
 - [ ] Plot query times as a histogram (made a proof of concept for this, but didn't like it enough yet to release)
 - [ ] Maybe add db name to verbose output, [see request](https://twitter.com/breinbaas1/status/1308138210606940160).
+- [x] Use `TIMING OFF` to reduce EXPLAIN overhead.
 - [x] A flag to include planning time in `-m explain` mode.
 - [x] A flag to use prepared queries in `-m client` mode.
 
