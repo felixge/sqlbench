@@ -73,7 +73,7 @@ Usage of sqlbench:
 
 sqlbench takes a list of SQL files and keeps executing them sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN ANALYZE` and capturing the total `Execution Time` for it.
 
-The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses.
+The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses. If you provide a baseline csv via `-i`, the relative differences are comparing the corresponding queries in the baseline rather than the current queries with each other.
 
 If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes network overhead.
 
