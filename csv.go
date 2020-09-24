@@ -13,11 +13,21 @@ import (
 type CSVColumn int
 
 const (
-	ColumnIterations CSVColumn = iota // iterations
-	ColumnQuery                       // query
-	ColumnSeconds                     // seconds
-	ColumnLast
+	ColumnIteration CSVColumn = iota // iteration
+	ColumnQuery                      // query
+	ColumnSeconds                    // seconds
+	ColumnFirst     = ColumnIteration
+	ColumnLast      = ColumnSeconds
 )
+
+// csvHeader returns the CSV header columns.
+func csvHeader() []string {
+	var header []string
+	for col := ColumnFirst; col <= ColumnLast; col++ {
+		header = append(header, col.String())
+	}
+	return header
+}
 
 // loadBaseline loads the query measurements contained in the csvPath file. The
 // resulting Query structs don't have the Path or SQL field populated.

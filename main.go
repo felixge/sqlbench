@@ -124,7 +124,7 @@ PostgreSQL version.
 		}
 		defer csvFile.Close()
 		csvW = csv.NewWriter(csvFile)
-		if err := csvW.Write([]string{"iteration", "query", "seconds"}); err != nil {
+		if err := csvW.Write(csvHeader()); err != nil {
 			return err
 		}
 		defer csvW.Flush()

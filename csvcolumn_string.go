@@ -8,15 +8,14 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[ColumnIterations-0]
+	_ = x[ColumnIteration-0]
 	_ = x[ColumnQuery-1]
 	_ = x[ColumnSeconds-2]
-	_ = x[ColumnLast-3]
 }
 
-const _CSVColumn_name = "iterationsquerysecondsColumnLast"
+const _CSVColumn_name = "iterationqueryseconds"
 
-var _CSVColumn_index = [...]uint8{0, 10, 15, 22, 32}
+var _CSVColumn_index = [...]uint8{0, 9, 14, 21}
 
 func (i CSVColumn) String() string {
 	if i < 0 || i >= CSVColumn(len(_CSVColumn_index)-1) {
