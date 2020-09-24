@@ -31,7 +31,6 @@ func clientDuration(ctx context.Context, conn *sql.Conn, query string, includePl
 	)
 
 	if !includePlanning {
-		fmt.Printf("prepare\n")
 		stmt, err := conn.PrepareContext(ctx, query)
 		if err != nil {
 			prepareErr = err
