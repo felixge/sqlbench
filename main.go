@@ -258,21 +258,30 @@ func render(queries []*Query, clear bool, baseline []*Query) error {
 		}
 	}
 
+	var baselineQuery *Query
 	var baselineFields []float64
 	for i, query := range queries {
 		headers = append(headers, query.Name)
 		fields := tableFields(query)
 
 		if len(baseline) > 0 {
-			baselineFields = tableFields(baselineLookup[query.Name])
+			baselineQuery = baselineLookup[query.Name]
+			baselineFields = tableFields(baselineQuery)
 		} else if baselineFields == nil {
 			baselineFields = fields
 		}
 
-		rows[0] = append(rows[0], fmt.Sprintf("%d", len(query.Seconds)))
+		n := len(query.Seconds)
+		nStr := fmt.Sprintf("%d", n)
+		if baselineQuery != nil {
+			baselineN := len(baselineQuery.Seconds)
+			nStr += fmt.Sprintf(" (%.2fx)", float64(n)/float64(baselineN))
+		}
+		rows[0] = append(rows[0], nStr)
+
 		for j, field := range fields {
 			var xStr = ""
-			if i > 0 || len(baseline) > 0 {
+			if i > 0 || baselineQuery != nil {
 				xStr = fmt.Sprintf(" (%.2fx)", field/baselineFields[j])
 			}
 			rows[j+1] = append(rows[j+1], fmt.Sprintf("%.2f%s", field, xStr))
