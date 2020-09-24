@@ -285,7 +285,7 @@ func LoadBenchmark(paths ...string) (*Benchmark, error) {
 	}
 	b := &Benchmark{}
 	for _, q := range queries {
-		// Our init or destory SQL might contain non-transactional queries such as
+		// Our init or destroy SQL might contain non-transactional queries such as
 		// `VACUUM`, so we'll try to execute them one by one. This will fail if a
 		// ';' is contained in a string or similar, but that's probably rarely the
 		// case. We could import a proper PostgreSQL query parser to solve this at
