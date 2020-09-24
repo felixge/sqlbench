@@ -165,7 +165,6 @@ Indeed, it appears that from the client's perspective the gauss query is a bit s
 Below are a few ideas for todos that I might implement at some point or would welcome as pull requests.
 
 - [ ] Compare benchmark results between PG versions
-- [ ] Warmup phase
 - [ ] Oneliner examples for README
 - [ ] Dynamically adjust unit between ms, s, etc.
 - [ ] Support specifying benchmarks using a single YAML file.
@@ -174,6 +173,7 @@ Below are a few ideas for todos that I might implement at some point or would we
 - [ ] Provide an easy way to capture all inputs and outputs in a single tar.gz file or GitHub gist.
 - [ ] Plot query times as a histogram (made a proof of concept for this, but didn't like it enough yet to release)
 - [ ] Maybe add db name to verbose output, [see request](https://twitter.com/breinbaas1/status/1308138210606940160).
+- [x] Warmup phase (can be done via init.sql and pg_prewarm()
 - [x] Use `TIMING OFF` to reduce EXPLAIN overhead.
 - [x] A flag to include planning time in `-m explain` mode.
 - [x] A flag to use prepared queries in `-m client` mode.
