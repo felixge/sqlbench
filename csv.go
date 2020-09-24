@@ -16,14 +16,13 @@ const (
 	ColumnIteration CSVColumn = iota // iteration
 	ColumnQuery                      // query
 	ColumnSeconds                    // seconds
-	ColumnFirst     = ColumnIteration
-	ColumnLast      = ColumnSeconds
+	Columns         = ColumnSeconds + 1
 )
 
 // csvHeader returns the CSV header columns.
 func csvHeader() []string {
 	var header []string
-	for col := ColumnFirst; col <= ColumnLast; col++ {
+	for col := CSVColumn(0); col < Columns; col++ {
 		header = append(header, col.String())
 	}
 	return header

@@ -154,11 +154,11 @@ outerLoop:
 				}
 				query.Seconds = append(query.Seconds, delta.Seconds()*1000)
 				if csvW != nil {
-					if err := csvW.Write([]string{
-						fmt.Sprintf("%d", i),
-						query.Name,
-						fmt.Sprintf("%f", delta.Seconds()),
-					}); err != nil {
+					record := make([]string, Columns)
+					record[ColumnIteration] = fmt.Sprintf("%d", i)
+					record[ColumnQuery] = query.Name
+					record[ColumnSeconds] = fmt.Sprintf("%f", delta.Seconds())
+					if err := csvW.Write(record); err != nil {
 						return err
 					}
 				}
