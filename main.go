@@ -344,7 +344,6 @@ type Query struct {
 	Name string
 	SQL  string
 
-	Errors  float64
 	Seconds []float64
 	Min     float64
 	Max     float64
