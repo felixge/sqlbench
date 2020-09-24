@@ -42,7 +42,8 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 [1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
 [2] https://www.postgresql.org/docs/current/libpq-envars.html
 `)+"\n")
-		csvF        = flag.String("o", "", "Output path for writing individual measurements in CSV format.")
+		inCsvF      = flag.String("i", "", "Input path for CSV file with baseline measurements.")
+		outCsvF     = flag.String("o", "", "Output path for writing individual measurements in CSV format.")
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")
 		planF       = flag.Bool("p", false, strings.TrimSpace(`
@@ -105,9 +106,19 @@ PostgreSQL version.
 		defer secondsTimer.Stop()
 	}
 
+	var baseline []*Query
+	if *inCsvF != "" {
+		baseline, err = loadBaseline(*inCsvF)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%#v\n", baseline)
+		os.Exit(1)
+	}
+
 	var csvW *csv.Writer
-	if *csvF != "" {
-		csvFile, err := os.OpenFile(*csvF, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+	if *outCsvF != "" {
+		csvFile, err := os.OpenFile(*outCsvF, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 		if err != nil {
 			return err
 		}
