@@ -112,8 +112,6 @@ PostgreSQL version.
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%#v\n", baseline)
-		os.Exit(1)
 	}
 
 	var csvW *csv.Writer
@@ -152,7 +150,7 @@ outerLoop:
 				} else if delta < 0 {
 					continue
 				}
-				query.Seconds = append(query.Seconds, delta.Seconds()*1000)
+				query.Seconds = append(query.Seconds, delta.Seconds())
 				if csvW != nil {
 					record := make([]string, Columns)
 					record[ColumnIteration] = fmt.Sprintf("%d", i)
@@ -174,7 +172,7 @@ outerLoop:
 		case <-drawTicker.C:
 			if err := bench.Update(); err != nil {
 				return err
-			} else if err := render(bench.Queries, *silentF == false); err != nil {
+			} else if err := render(bench.Queries, *silentF == false, baseline); err != nil {
 				return err
 			}
 		case sig := <-sigCh:
@@ -189,7 +187,7 @@ outerLoop:
 
 	if err := bench.Update(); err != nil {
 		return err
-	} else if err := render(bench.Queries, *silentF == false); err != nil {
+	} else if err := render(bench.Queries, *silentF == false, baseline); err != nil {
 		return err
 	}
 	fmt.Printf("\n%s\n", exitMsg)
@@ -219,7 +217,7 @@ outerLoop:
 	return nil
 }
 
-func render(queries []*Query, clear bool) error {
+func render(queries []*Query, clear bool, baseline []*Query) error {
 	screen := &bytes.Buffer{}
 
 	if clear {
@@ -242,27 +240,40 @@ func render(queries []*Query, clear bool) error {
 		{"p95"},
 	}
 
-	var firstFields []float64
+	baselineLookup := map[string]*Query{}
+	for _, query := range baseline {
+		baselineLookup[query.Name] = query
+	}
+
+	tableFields := func(q *Query) []float64 {
+		const scale = 1000
+		return []float64{
+			q.Min * scale,
+			q.Max * scale,
+			q.Mean * scale,
+			q.StdDev * scale,
+			q.Median * scale,
+			q.P90 * scale,
+			q.P95 * scale,
+		}
+	}
+
+	var baselineFields []float64
 	for i, query := range queries {
 		headers = append(headers, query.Name)
-		fields := []float64{
-			query.Min,
-			query.Max,
-			query.Mean,
-			query.StdDev,
-			query.Median,
-			query.P90,
-			query.P95,
-		}
-		if firstFields == nil {
-			firstFields = fields
+		fields := tableFields(query)
+
+		if len(baseline) > 0 {
+			baselineFields = tableFields(baselineLookup[query.Name])
+		} else if baselineFields == nil {
+			baselineFields = fields
 		}
 
 		rows[0] = append(rows[0], fmt.Sprintf("%d", len(query.Seconds)))
 		for j, field := range fields {
 			var xStr = ""
-			if i > 0 {
-				xStr = fmt.Sprintf(" (%.2fx)", field/firstFields[j])
+			if i > 0 || len(baseline) > 0 {
+				xStr = fmt.Sprintf(" (%.2fx)", field/baselineFields[j])
 			}
 			rows[j+1] = append(rows[j+1], fmt.Sprintf("%.2f%s", field, xStr))
 		}
