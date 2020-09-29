@@ -16,6 +16,8 @@ To install or update sqlbench, run:
 $ go get -u github.com/felixge/sqlbench
 ```
 
+Alternatively you can download a binary from the [release page](https://github.com/felixge/sqlbench/releases).
+
 ## Examples
 
 Below are a few one-liners to get you started. They assume you're running sqlbench from the directory of a clone of this repo.
