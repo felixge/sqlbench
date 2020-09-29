@@ -21,22 +21,22 @@ $ go get -u github.com/felixge/sqlbench
 Below are a few one-liners to get you started. They assume you're running sqlbench from the directory of a clone of this repo.
 
 ```bash
-# realtime output benchmark of a few queries until ctrl+c is hit
+# Benchmark a few queries until ctrl+c is hit. Output results in realtime.
 sqlbench examples/sum/*.sql
 
-# realtime output using client wallclock time (instead of explain) until ctrl+c
+# Benchmark using client wallclock time (instead of explain) until ctrl+c.
 sqlbench -m client examples/sum/*.sql
 
-# run for 3 seconds and only print results once at the end
+# Run for 3 seconds and only print results once at the end.
 sqlbench -t 3 -s examples/sum/*.sql
 
-# run for 1000 iterations and only print verbose results once at the end
+# Run for 1000 iterations and only print verbose results once at the end
 sqlbench -n 1000 -s -v examples/sum/*.sql
 
-# realtime output, and record the results for 1000 iterations into a csv file
+# Record the results for 1000 iterations into a csv file.
 sqlbench -n 1000 -o baseline.csv examples/sum/*.sql
 
-# realtime output, and compare 1000 iterations to a baseline recording
+# Compare 1000 iterations to a baseline recording.
 sqlbench -n 1000 -i baseline.csv examples/sum/*.sql
 ```
 
