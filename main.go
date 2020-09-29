@@ -20,7 +20,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-const version = "1.0"
+const version = "1.1"
 
 func main() {
 	if err := run(); err != nil {
