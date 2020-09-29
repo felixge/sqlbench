@@ -16,6 +16,25 @@ To install or update sqlbench, run:
 $ go get -u github.com/felixge/sqlbench
 ```
 
+## Examples
+
+Below are a few one-liners to get you started. They assume you're running sqlbench from the directory of a clone of this repo.
+
+```
+# realtime output benchmark of a few queries until ctrl+c is hit
+sqlbench examples/sum/*.sql
+# realtime output using client wallclock time (instead of explain) until ctrl+c
+sqlbench -m client examples/sum/*.sql
+# run for 3 seconds and only print results once at the end
+sqlbench -t 3 -s examples/sum/*.sql
+# run for 1000 iterations and only print verbose results once at the end
+sqlbench -n 1000 -s -v examples/sum/*.sql
+# realtime output, and record the results for 1000 iterations into a csv file
+sqlbench -n 1000 -o baseline.csv examples/sum/*.sql
+# realtime output, and compare 1000 iterations to a baseline recording
+sqlbench -n 1000 -i baseline.csv examples/sum/*.sql
+```
+
 ## Usage
 
 ```
@@ -30,6 +49,8 @@ Usage of sqlbench:
     	[1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
     	[2] https://www.postgresql.org/docs/current/libpq-envars.html
     	(default "postgres://")
+  -i string
+    	Input path for CSV file with baseline measurements.
   -m string
     	Method for measuring the query time. One of: "client", "explain" (default "explain")
   -n int
@@ -52,7 +73,7 @@ Usage of sqlbench:
 
 sqlbench takes a list of SQL files and keeps executing them sequentially, measuring their execution times. By default the execution time is measured by prefixing the query with `EXPLAIN (ANALYZE, TIMING OFF) ` and capturing the total `Execution Time` for it.
 
-The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses.
+The query columns are ordered by mean execution time in ascending order, and the relative difference compared to the fastest query is shown in parentheses. If you provide a baseline csv via `-i`, the relative differences are comparing the corresponding queries in the baseline rather than the current queries with each other.
 
 If the `-m client` flag is given, the time is measured using the wallclock time of sqlbench which includes network overhead.
 

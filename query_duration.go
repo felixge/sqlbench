@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 )
@@ -21,6 +22,7 @@ var queryDurationMethods = func() string {
 	for method := range queryDurationFuncs {
 		list = append(list, fmt.Sprintf("%q", method))
 	}
+	sort.Strings(list)
 	return strings.Join(list, ", ")
 }
 

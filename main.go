@@ -42,7 +42,8 @@ PGHOST, PGPORT, PGPASSWORD, ... .
 [1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
 [2] https://www.postgresql.org/docs/current/libpq-envars.html
 `)+"\n")
-		csvF        = flag.String("o", "", "Output path for writing individual measurements in CSV format.")
+		inCsvF      = flag.String("i", "", "Input path for CSV file with baseline measurements.")
+		outCsvF     = flag.String("o", "", "Output path for writing individual measurements in CSV format.")
 		iterationsF = flag.Int64("n", -1, "Terminate after the given number of iterations.")
 		secondsF    = flag.Float64("t", -1, "Terminate after the given number of seconds.")
 		planF       = flag.Bool("p", false, strings.TrimSpace(`
@@ -105,15 +106,23 @@ PostgreSQL version.
 		defer secondsTimer.Stop()
 	}
 
+	var baseline []*Query
+	if *inCsvF != "" {
+		baseline, err = loadBaseline(*inCsvF)
+		if err != nil {
+			return err
+		}
+	}
+
 	var csvW *csv.Writer
-	if *csvF != "" {
-		csvFile, err := os.OpenFile(*csvF, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+	if *outCsvF != "" {
+		csvFile, err := os.OpenFile(*outCsvF, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 		if err != nil {
 			return err
 		}
 		defer csvFile.Close()
 		csvW = csv.NewWriter(csvFile)
-		if err := csvW.Write([]string{"iteration", "query", "seconds"}); err != nil {
+		if err := csvW.Write(csvHeader()); err != nil {
 			return err
 		}
 		defer csvW.Flush()
@@ -141,13 +150,17 @@ outerLoop:
 				} else if delta < 0 {
 					continue
 				}
-				query.Seconds = append(query.Seconds, delta.Seconds()*1000)
+				seconds := delta.Seconds()
+				query.Seconds = append(query.Seconds, seconds)
 				if csvW != nil {
-					if err := csvW.Write([]string{
-						fmt.Sprintf("%d", i),
-						query.Name,
-						fmt.Sprintf("%f", delta.Seconds()),
-					}); err != nil {
+					row := &CSVRow{
+						Iteration: i,
+						Query:     query.Name,
+						Seconds:   seconds,
+					}
+					if record, err := row.MarshalRecord(); err != nil {
+						return err
+					} else if err := csvW.Write(record); err != nil {
 						return err
 					}
 				}
@@ -163,7 +176,7 @@ outerLoop:
 		case <-drawTicker.C:
 			if err := bench.Update(); err != nil {
 				return err
-			} else if err := render(bench.Queries, *silentF == false); err != nil {
+			} else if err := render(bench.Queries, *silentF == false, baseline); err != nil {
 				return err
 			}
 		case sig := <-sigCh:
@@ -178,7 +191,7 @@ outerLoop:
 
 	if err := bench.Update(); err != nil {
 		return err
-	} else if err := render(bench.Queries, *silentF == false); err != nil {
+	} else if err := render(bench.Queries, *silentF == false, baseline); err != nil {
 		return err
 	}
 	fmt.Printf("\n%s\n", exitMsg)
@@ -208,7 +221,7 @@ outerLoop:
 	return nil
 }
 
-func render(queries []*Query, clear bool) error {
+func render(queries []*Query, clear bool, baseline []*Query) error {
 	screen := &bytes.Buffer{}
 
 	if clear {
@@ -231,27 +244,49 @@ func render(queries []*Query, clear bool) error {
 		{"p95"},
 	}
 
-	var firstFields []float64
+	baselineLookup := map[string]*Query{}
+	for _, query := range baseline {
+		baselineLookup[query.Name] = query
+	}
+
+	tableFields := func(q *Query) []float64 {
+		const scale = 1000
+		return []float64{
+			q.Min * scale,
+			q.Max * scale,
+			q.Mean * scale,
+			q.StdDev * scale,
+			q.Median * scale,
+			q.P90 * scale,
+			q.P95 * scale,
+		}
+	}
+
+	var baselineQuery *Query
+	var baselineFields []float64
 	for i, query := range queries {
 		headers = append(headers, query.Name)
-		fields := []float64{
-			query.Min,
-			query.Max,
-			query.Mean,
-			query.StdDev,
-			query.Median,
-			query.P90,
-			query.P95,
-		}
-		if firstFields == nil {
-			firstFields = fields
+		fields := tableFields(query)
+
+		if len(baseline) > 0 {
+			baselineQuery = baselineLookup[query.Name]
+			baselineFields = tableFields(baselineQuery)
+		} else if baselineFields == nil {
+			baselineFields = fields
 		}
 
-		rows[0] = append(rows[0], fmt.Sprintf("%d", len(query.Seconds)))
+		n := len(query.Seconds)
+		nStr := fmt.Sprintf("%d", n)
+		if baselineQuery != nil {
+			baselineN := len(baselineQuery.Seconds)
+			nStr += fmt.Sprintf(" (%.2fx)", float64(n)/float64(baselineN))
+		}
+		rows[0] = append(rows[0], nStr)
+
 		for j, field := range fields {
 			var xStr = ""
-			if i > 0 {
-				xStr = fmt.Sprintf(" (%.2fx)", field/firstFields[j])
+			if i > 0 || baselineQuery != nil {
+				xStr = fmt.Sprintf(" (%.2fx)", field/baselineFields[j])
 			}
 			rows[j+1] = append(rows[j+1], fmt.Sprintf("%.2f%s", field, xStr))
 		}
@@ -274,7 +309,7 @@ func LoadBenchmark(paths ...string) (*Benchmark, error) {
 	}
 	b := &Benchmark{}
 	for _, q := range queries {
-		// Our init or destory SQL might contain non-transactional queries such as
+		// Our init or destroy SQL might contain non-transactional queries such as
 		// `VACUUM`, so we'll try to execute them one by one. This will fail if a
 		// ';' is contained in a string or similar, but that's probably rarely the
 		// case. We could import a proper PostgreSQL query parser to solve this at
@@ -399,4 +434,33 @@ func execIndividually(ctx context.Context, conn *sql.Conn, q *Query) error {
 		}
 	}
 	return nil
+}
+
+// loadBaseline loads the query measurements contained in the csvPath file. The
+// resulting Query structs don't have the Path or SQL field populated.
+func loadBaseline(csvPath string) ([]*Query, error) {
+	rows, err := loadCSVRows(csvPath)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		queries []*Query
+		lookup  = map[string]*Query{}
+	)
+
+	for _, row := range rows {
+		query := lookup[row.Query]
+		if query == nil {
+			query = &Query{Name: row.Query}
+			lookup[row.Query] = query
+			queries = append(queries, query)
+		}
+		query.Seconds = append(query.Seconds, row.Seconds)
+	}
+
+	for _, query := range queries {
+		query.UpdateStats()
+	}
+	return queries, nil
 }
