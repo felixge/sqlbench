@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -143,12 +144,11 @@ outerLoop:
 
 			for {
 				delta, err := preparedFn()
-				if err != nil {
-					return fmt.Errorf("%s: %w", query.Path, err)
-					// Deal with PostgreSQL reporting negative execution times, probably
-					// a docker for mac issue on my machine.
-				} else if delta < 0 {
+				if errors.As(err, &negativeTimeError{}) {
+					query.Errors++
 					continue
+				} else if err != nil {
+					return fmt.Errorf("%s: %w", query.Path, err)
 				}
 				seconds := delta.Seconds()
 				query.Seconds = append(query.Seconds, seconds)
@@ -242,6 +242,7 @@ func render(queries []*Query, clear bool, baseline []*Query) error {
 		{"median"},
 		{"p90"},
 		{"p95"},
+		{"errors"},
 	}
 
 	baselineLookup := map[string]*Query{}
@@ -259,6 +260,7 @@ func render(queries []*Query, clear bool, baseline []*Query) error {
 			q.Median * scale,
 			q.P90 * scale,
 			q.P95 * scale,
+			q.Errors,
 		}
 	}
 
@@ -285,7 +287,7 @@ func render(queries []*Query, clear bool, baseline []*Query) error {
 
 		for j, field := range fields {
 			var xStr = ""
-			if i > 0 || baselineQuery != nil {
+			if (i > 0 || baselineQuery != nil) && baselineFields[j] != 0 {
 				xStr = fmt.Sprintf(" (%.2fx)", field/baselineFields[j])
 			}
 			rows[j+1] = append(rows[j+1], fmt.Sprintf("%.2f%s", field, xStr))
@@ -296,6 +298,7 @@ func render(queries []*Query, clear bool, baseline []*Query) error {
 	table.SetAutoFormatHeaders(false)
 	table.SetHeader(headers)
 	table.SetBorder(false)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
 	table.AppendBulk(rows)
 	table.Render()
 	screen.WriteTo(os.Stdout)
@@ -387,6 +390,7 @@ type Query struct {
 	StdDev  float64
 	P90     float64
 	P95     float64
+	Errors  float64
 }
 
 func (q *Query) UpdateStats() error {

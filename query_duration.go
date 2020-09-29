@@ -89,12 +89,12 @@ func explainDuration(ctx context.Context, conn *sql.Conn, query string, includeP
 
 		executionTime := queries[0].ExecutionTime
 		planningTime := queries[0].PlanningTime
-		// Seems to happen with Docker for Mac, let's not silently collect these
-		// as valid samples.
+
+		// See negativeTimeError comment for more details.
 		if executionTime < 0 {
-			return 0, fmt.Errorf(`"Execution Time" %f is < 0`, executionTime)
+			return 0, negativeTimeError{"Execution", executionTime}
 		} else if planningTime < 0 {
-			return 0, fmt.Errorf(`"Planning Time" %f is < 0`, planningTime)
+			return 0, negativeTimeError{"Planning", planningTime}
 		}
 
 		totalTime := executionTime
@@ -105,4 +105,19 @@ func explainDuration(ctx context.Context, conn *sql.Conn, query string, includeP
 		d := time.Duration(float64(time.Millisecond) * totalTime)
 		return d, nil
 	}
+}
+
+// negativeTimeError indicates that a negative execution/planning time was
+// reported by PostgreSQL. This is something I encounter with Docker for Mac
+// sometimes, which is known to be very buggy [1] when it comes to time
+// handling. This error message allows sqlbench to simply retry when this issue
+// is encountered.
+// [1] https://twitter.com/felixge/status/1221512507690496001
+type negativeTimeError struct {
+	Type string
+	Time float64
+}
+
+func (n negativeTimeError) Error() string {
+	return fmt.Sprintf(`"%s Time" %f is < 0`, n.Type, n.Time)
 }
