@@ -10,13 +10,14 @@ Only PostgreSQL is supported at this point, but pull requests for MySQL or other
 
 ## Install
 
-To install or update sqlbench, run:
+You can download a binary from the [release page](https://github.com/felixge/sqlbench/releases).
+
+If you have Go 1.13 or later installed, you can install or update sqlbench from source:
 
 ```
 $ go get -u github.com/felixge/sqlbench
 ```
 
-Alternatively you can download a binary from the [release page](https://github.com/felixge/sqlbench/releases).
 
 ## Examples
 
