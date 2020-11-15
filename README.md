@@ -18,6 +18,11 @@ If you have Go 1.13 or later installed, you can install or update sqlbench from 
 $ go get -u github.com/felixge/sqlbench
 ```
 
+**Windows Users:** You may also install the [chocolatey package](https://chocolatey.org/packages/sqlbench) maintained by [picolino](https://github.com/picolino):
+
+```
+$ choco install sqlbench
+```
 
 ## Examples
 
