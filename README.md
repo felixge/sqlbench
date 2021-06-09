@@ -24,6 +24,15 @@ $ go get -u github.com/felixge/sqlbench
 $ choco install sqlbench
 ```
 
+### Install via brew
+
+If you're macOS user and using [Homebrew](https://brew.sh/), you can install via brew command:
+
+```sh
+$ brew update
+$ brew install sqlbench
+```
+
 ## Examples
 
 Below are a few one-liners to get you started. They assume you're running sqlbench from the directory of a clone of this repo.
