@@ -1,6 +1,6 @@
 module github.com/felixge/sqlbench
 
-go 1.14
+go 1.16
 
 require (
 	github.com/jackc/pgx/v4 v4.8.1
