@@ -12,7 +12,7 @@ Only PostgreSQL is supported at this point, but pull requests for MySQL or other
 
 You can download a binary from the [release page](https://github.com/felixge/sqlbench/releases).
 
-If you have Go 1.13 or later installed, you can install or update sqlbench from source:
+If you have Go 1.16 or later installed, you can install or update sqlbench from source:
 
 ```
 $ go get -u github.com/felixge/sqlbench
@@ -55,10 +55,10 @@ Usage of sqlbench:
   -c string
     	Connection URL or DSN for connecting to PostgreSQL as understood by pgx [1].
     	E.g.: postgres://user:secret@localhost:5432/my_db?sslmode=disable
-    	
+
     	Alternatively you can use standard PostgreSQL environment variables [2] such as
     	PGHOST, PGPORT, PGPASSWORD, ... .
-    	
+
     	[1] https://pkg.go.dev/github.com/jackc/pgx/v4/stdlib?tab=doc
     	[2] https://www.postgresql.org/docs/current/libpq-envars.html
     	(default "postgres://")
@@ -137,16 +137,16 @@ $ sqlbench -v -s -n 1000 examples/sum/*.sql | tee explain-bench.txt
 ```
 
 ```
-         | gauss |    window     |   recursive    
+         | gauss |    window     |   recursive
 ---------+-------+---------------+----------------
-  n      |  1000 |          1000 |          1000  
-  min    |  0.35 | 1.31 (3.79x)  | 1.80 (5.22x)   
-  max    |  4.18 | 23.76 (5.68x) | 11.41 (2.73x)  
-  mean   |  0.50 | 1.94 (3.85x)  | 2.67 (5.30x)   
-  stddev |  0.16 | 0.81 (4.93x)  | 0.63 (3.87x)   
-  median |  0.53 | 2.02 (3.80x)  | 2.91 (5.49x)   
-  p90    |  0.67 | 2.53 (3.80x)  | 3.41 (5.12x)   
-  p95    |  0.68 | 2.57 (3.81x)  | 3.50 (5.18x)   
+  n      |  1000 |          1000 |          1000
+  min    |  0.35 | 1.31 (3.79x)  | 1.80 (5.22x)
+  max    |  4.18 | 23.76 (5.68x) | 11.41 (2.73x)
+  mean   |  0.50 | 1.94 (3.85x)  | 2.67 (5.30x)
+  stddev |  0.16 | 0.81 (4.93x)  | 0.63 (3.87x)
+  median |  0.53 | 2.02 (3.80x)  | 2.91 (5.49x)
+  p90    |  0.67 | 2.53 (3.80x)  | 3.41 (5.12x)
+  p95    |  0.68 | 2.57 (3.81x)  | 3.50 (5.18x)
 
 Stopping after 1000 iterations as requested.
 
@@ -178,16 +178,16 @@ $ sqlbench -s -n 1000 -m client examples/sum/*.sql | tee client-bench.txt
 ```
 
 ```
-         | gauss |    window    |  recursive    
+         | gauss |    window    |  recursive
 ---------+-------+--------------+---------------
-  n      |  1000 |         1000 |         1000  
-  min    |  0.66 | 1.44 (2.18x) | 2.03 (3.08x)  
-  max    |  5.66 | 7.31 (1.29x) | 4.34 (0.77x)  
-  mean   |  0.83 | 1.72 (2.08x) | 2.35 (2.83x)  
-  stddev |  0.23 | 0.33 (1.41x) | 0.27 (1.18x)  
-  median |  0.78 | 1.65 (2.11x) | 2.26 (2.89x)  
-  p90    |  0.98 | 1.98 (2.03x) | 2.68 (2.75x)  
-  p95    |  1.05 | 2.13 (2.03x) | 2.89 (2.76x)  
+  n      |  1000 |         1000 |         1000
+  min    |  0.66 | 1.44 (2.18x) | 2.03 (3.08x)
+  max    |  5.66 | 7.31 (1.29x) | 4.34 (0.77x)
+  mean   |  0.83 | 1.72 (2.08x) | 2.35 (2.83x)
+  stddev |  0.23 | 0.33 (1.41x) | 0.27 (1.18x)
+  median |  0.78 | 1.65 (2.11x) | 2.26 (2.89x)
+  p90    |  0.98 | 1.98 (2.03x) | 2.68 (2.75x)
+  p95    |  1.05 | 2.13 (2.03x) | 2.89 (2.76x)
 
 Stopping after 1000 iterations as requested.
 ```
